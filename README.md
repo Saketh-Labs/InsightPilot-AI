@@ -172,6 +172,72 @@ you want may be taken; the script says so and suggests a suffix. Lowercase only.
 
 ---
 
+## Using it on your own data
+
+Nothing downstream of the query knows what a "return" is. The page receives five
+columns and treats them as *a numerator, a denominator, and three labels* — so
+this works for any rate you can split two ways, not just returns.
+
+**The contract is five column names.** Your query must return exactly these,
+spelled exactly like this:
+
+| Column | Type | What it is |
+|---|---|---|
+| `week_start` | DATE | the period bucket, one row per period per segment |
+| `traffic_source` | STRING | your first dimension |
+| `category` | STRING | your second dimension |
+| `returned_items` | INT64 | the **numerator** — the thing you are measuring |
+| `total_items` | INT64 | the **denominator** — everything it could have been |
+
+Alias your own columns to those names and `refresh_dashboard.py` needs no
+changes at all:
+
+```sql
+SELECT
+  DATE_TRUNC(DATE(signed_up_at), WEEK(MONDAY)) AS week_start,
+  acquisition_channel                          AS traffic_source,
+  plan_tier                                    AS category,
+  COUNTIF(churned)                             AS returned_items,
+  COUNT(*)                                     AS total_items
+FROM `your_project.your_dataset.subscriptions`
+WHERE DATE(signed_up_at) >= DATE_SUB(CURRENT_DATE(), INTERVAL 112 WEEK)
+  AND DATE(signed_up_at) <  CURRENT_DATE()
+GROUP BY week_start, traffic_source, category
+```
+
+That is a churn dashboard. Same code, same page, same decomposition. Conversion
+by channel × device, defect rate by line × shift, click-through by placement ×
+audience — all the same shape.
+
+**Two rules the query must follow**, both of which fail quietly rather than
+loudly:
+
+- **Counts, never rates.** Return `COUNTIF(...)` and `COUNT(*)`, not a ratio.
+  The whole point is that counts stay additive when the reader filters; hand it
+  a pre-computed rate and every filtered view silently averages averages.
+- **One statement.** Two statements make it a BigQuery script, and a dry run of
+  a script reports zero bytes, which disables the cost ceiling. The script
+  refuses to run on a zero estimate for exactly this reason.
+
+**Then rename the labels**, which live in `dashboard/index.html` in two places:
+
+- the two dimension buttons, around line 430 — `Traffic source` and `Category`
+- the `DIMS` object, around line 530, which carries the singular and plural
+  nouns used in the generated sentences (`noun`, `plural`, `other`,
+  `otherPlural`)
+
+Everything else on the page — every chart, every table, every sentence — is
+derived from the data at render time, so there is nothing else to touch.
+
+**One judgement call is yours**, and the dashboard cannot make it for you: the
+return-lag guard in `sql/return_lag.sql` measures how late *returns* arrive. If
+your event has no settling delay — a click, a login — set `--lag-weeks 0` and
+delete that query. If it has a longer one, like a 90-day refund window, the
+measurement still works but check that 112 weeks is enough history to leave two
+full comparison windows after the guard is subtracted.
+
+---
+
 ## Reading the numbers
 
 The overall rate is a weighted average — each segment's rate, weighted by its

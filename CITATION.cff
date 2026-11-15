@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+title: "InsightPilot AI"
+message: "If you use this software or the method it implements, please cite it."
+type: software
+abstract: >-
+  A self-refreshing dashboard that decomposes a change in a rate into a rate
+  effect and a mix effect using a Kitagawa decomposition, rebuilt weekly from
+  BigQuery by a scheduled job and served as a single self-contained HTML file
+  from Cloud Storage.
+authors:
+  - family-names: "Poreddy"
+    given-names: "Sai Saketh Reddy"
+repository-code: "https://github.com/Saketh-Labs/InsightPilot-AI"
+url: "https://github.com/Saketh-Labs/InsightPilot-AI"
+license: MIT
+keywords:
+  - rate-mix-decomposition
+  - kitagawa-decomposition
+  - bigquery
+  - google-cloud-platform
+  - data-visualization
+  - analytics-engineering
+
+# The method this implements is not mine. If you are citing the technique
+# rather than this implementation, cite Kitagawa directly:
+references:
+  - type: article
+    title: "Components of a Difference Between Two Rates"
+    authors:
+      - family-names: "Kitagawa"
+        given-names: "Evelyn M."
+    journal: "Journal of the American Statistical Association"
+    volume: 50
+    issue: 272
+    start: 1168
+    end: 1194
+    year: 1955
+    doi: "10.1080/01621459.1955.10501299"

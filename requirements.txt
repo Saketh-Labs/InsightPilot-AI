@@ -1,2 +1,12 @@
-google-cloud-bigquery>=3.25
-google-cloud-storage>=2.18
+# Pinned exactly rather than with >=, deliberately.
+#
+# This repo is published alongside an article, so someone will clone it long
+# after it was written. A >= range means they get whichever library shipped
+# that week, and the first thing they see is a failure that has nothing to do
+# with the code they came to read. These are the versions it was last verified
+# against, end to end, against a real BigQuery project.
+#
+# To move them forward: bump, run `python refresh_dashboard.py --estimate-only`
+# (free, touches nothing), then a full run with --no-upload.
+google-cloud-bigquery==3.46.2
+google-cloud-storage==3.17.1
