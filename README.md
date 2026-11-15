@@ -3,7 +3,7 @@
 A dashboard that explains **why** a metric moved, and rebuilds itself every week
 for about the price of a coffee per year.
 
-Most dashboards report that the return rate went from 11.7% to 12.4% and stop
+Most dashboards report that the return rate moved a fifth of a point and stop
 there. This one splits that change into the only two things it can be:
 
 - **Rate effect** — customers inside each segment behaved differently.
@@ -12,9 +12,11 @@ there. This one splits that change into the only two things it can be:
 Those point at different teams and different fixes, and a trend line cannot tell
 them apart.
 
-<!-- TODO: GIF of the dashboard — change a filter, watch the bridge redraw. -->
+[![The InsightPilot dashboard](docs/cover.png)](https://storage.googleapis.com/insightspilot-ai/Article_Insights_AI.html)
 
-**Live demo:** <!-- TODO: https://storage.googleapis.com/YOUR-BUCKET/Article_Insights_AI.html -->
+**[Open the live dashboard →](https://storage.googleapis.com/insightspilot-ai/Article_Insights_AI.html)**
+It rebuilds itself every week, so the numbers you see there will not match the
+ones written below for long — which is rather the point.
 
 ---
 
@@ -258,17 +260,32 @@ only about who gets the overlap.
 
 ### What the data actually says
 
-Measured against the live dataset over the two 52-week windows ending
-2026-10-12, with a 2-week lag guard:
+Measured 2026-11-07, comparing 2025-10-27 → 2026-10-19 against
+2024-10-28 → 2025-10-20, with a 2-week lag guard:
 
 | | Last year | This year | Change |
 |---|---|---|---|
-| Return rate | 11.658% | 12.400% | **+0.742 pt** |
+| Return rate | 11.616% | 11.843% | **+0.227 pt** |
+| Items | 3,624 of 31,199 | 6,526 of 55,105 | |
 
 | Split by | Mix | Rate |
 |---|---|---|
-| Traffic source | −0.003 pt | +0.745 pt |
-| Product category | +0.008 pt | +0.734 pt |
+| Traffic source | +0.002 pt | +0.225 pt |
+| Product category | −0.003 pt | +0.231 pt |
+
+Both splits close to a residual of about 1e-15, which is floating-point noise
+rather than a real gap.
+
+**These numbers will not stay true, and that is worth saying plainly.** Ten days
+earlier the same measurement gave +0.742 pt. The dataset is synthetic and
+regenerates continuously — the item count nearly doubled year over year, so the
+comparison windows are not sampling a stable population. Quote a figure from
+here in a blog post and it will be wrong by the time anyone reads it; link to
+the live page instead.
+
+What *is* stable is the shape of the answer: **the mix effect is ~0 on both
+dimensions, on every run so far.** The rate rose because customers inside the
+segments returned more, not because the mix of customers changed.
 
 **The mix effect is essentially zero on both dimensions.** The rate rose because
 customers inside every major segment returned more, not because the mix of
